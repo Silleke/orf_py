@@ -1,6 +1,7 @@
 from Bio import SeqIO
 from Bio.Seq import Seq
 
+
 dnatypelist = ['1. The Standard Code',
             '2. The Vertebrate Mitochondrial Code',
             '3. The Yeast Mitochondrial Code',
@@ -32,13 +33,10 @@ def fastaparse(files):
     sequences = []
     fafiles = files.split(";")
     for f in fafiles:
-        try:
-            for seq_record in SeqIO.parse(f,"fasta"):
-                print(seq_record.id)
-                pair = (seq_record.id,seq_record.seq)
-                sequences.append(pair)
-        except:
-            print("Something went wrong")
+        fasta_sequences = SeqIO.parse(open(f), 'fasta')
+        for fasta in fasta_sequences:
+            pair = (fasta.id, fasta.seq)
+            sequences.append(pair)
 
     return sequences
 
@@ -64,27 +62,20 @@ def findorfs(pair, dnatable, min_protein_length, startcod):
                 aa_start = getstartloc(aa_end, trans, startaalist)
 
             while aa_start < len(trans):
-                print(len(trans))
+                if aa_start == -1:
+                    break
                 currentstartcodon = frame_seq[(aa_start * 3):(aa_start * 3 + 3)]
                 if currentstartcodon in startcod or startcod == []:
                     pass
                 else:
                     aa_end = aa_start+1
                     aa_start = getstartloc(aa_end,trans,startaalist)
-                    if aa_start == -1:
-                        break
-                    else:
-                        continue
                 aa_end = trans.find("*", aa_start)
                 aa_end2 = trans.find("X", aa_start)
                 if aa_end2 == -1 and aa_end == -1:
                     break
-                if aa_end2 < aa_end:
+                if aa_end2 != -1 and aa_end2 < aa_end:
                     aa_end = aa_end2
-                if aa_start == -1:
-                    break
-                if aa_end == -1:
-                    break
                 if aa_end - aa_start >= min_protein_length:
                     if strand == 1:
                         start = frame + aa_start * 3 + 1
