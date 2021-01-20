@@ -48,7 +48,6 @@ while True:
             file1 = open("../output/%s.csv"%values['filename'], "w+")
             file1.write("Header, ORF length, Start, Stop, Strand, Nucleotide Seq, Protein Seq\n")
             for pair in fasta:
-                print(pair)
                 orf_list = fc.findorfs(pair,dnatable,min_protein_length, startcod)
                 for start, end, strand, nucl, pro in orf_list:
                     file1.write(
